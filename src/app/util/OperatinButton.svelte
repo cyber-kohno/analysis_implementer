@@ -2,13 +2,19 @@
   export let isDisable: boolean = false;
   export let name: string;
   export let callback: () => void = () => {};
+  export let isLineup = false;
+  export let width = 0;
 </script>
 
-<button class="item" data--disable={isDisable} onclick={callback}>{name}</button
+<button
+  data--disable={isDisable}
+  data--lineup={isLineup}
+  onclick={callback}
+  style:width={width === 0 ? "none" : `${width}px`}>{name}</button
 >
 
 <style>
-  .item {
+  button {
     display: block;
     position: relative;
     background-color: rgb(205, 232, 255);
@@ -27,8 +33,12 @@
       background-color: rgb(224, 241, 255);
     }
   }
-  .item[data--disable="true"] {
+  button[data--disable="true"] {
     opacity: 0.4;
     pointer-events: none;
+  }
+  button[data--lineup="true"] {
+    display: inline-block;
+    margin: 3px 4px 0 0;
   }
 </style>

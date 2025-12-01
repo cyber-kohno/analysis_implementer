@@ -46,7 +46,10 @@
   {#if focus.length > 1}
     <ChannelItem
       isActive={focus.length === 2}
-      name={getWork().type}
+      name={(() => {
+        const work = getWork();
+        return `${work.type} (${work.name})`;
+      })()}
       depth={2}
     />
   {/if}

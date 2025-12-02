@@ -1,5 +1,6 @@
 import type { Store } from "../store";
 import StoreExecute from "./StoreExecute";
+import StoreFileChoose from "./storeFileChoose";
 
 namespace StoreWork {
     export type WorkType = 'file-choose' | 'execute' | 'execute-iterate'
@@ -13,16 +14,17 @@ namespace StoreWork {
 
     export const getInitial = (type: WorkType, num: number): Props => {
 
-        const getDetaul = () => {
+        const getDetail = () => {
             switch (type) {
                 case 'execute': return StoreExecute.getInitial();
+                case 'file-choose': return StoreFileChoose.getInitial();
                 default: throw new Error();
             }
         }
         return {
             type,
             name: `work${num}`,
-            detail: getDetaul()
+            detail: getDetail()
         }
     }
 

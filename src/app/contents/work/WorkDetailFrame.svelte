@@ -1,5 +1,6 @@
 <script lang="ts">
   import store from "../../store/store";
+  import WDChooseFile from "./choose-file/WDChooseFile.svelte";
   import WDExecute from "./execute/WDExecute.svelte";
   import WorkOperationBuilder from "./WorkOperationBuilder";
 
@@ -19,4 +20,8 @@
 
 {#if opr === "Proc"}
   <WDExecute />
+{:else if opr === "Resources"}
+  <WDExecute />
+{:else if opr === "File-Choose"}
+  <WDChooseFile />
 {/if}

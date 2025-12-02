@@ -1,19 +1,14 @@
 <script lang="ts">
-  import store from "../../../store/store";
-  import type StoreWork from "../../../store/work/storeWork";
+  import type { KeyValue } from "../../../store/types";
 
-  export let work: StoreWork.Props;
-  export let index: number;
-
-  $: transition = () => {
-    $store.focus.push(index);
-    $store.focus = $store.focus.slice();
-  };
+  export let envKeyValue: KeyValue;
+  export let isFocus: boolean;
+  export let select: () => void;
 </script>
 
-<button class="record" onclick={transition}>
-  <div class="type">{work.type}</div>
-  <div class="name">{work.name}</div>
+<button class="record" onclick={select} data--focus={isFocus}>
+  <div class="key">{envKeyValue.key}</div>
+  <div class="value">{envKeyValue.value}</div>
 </button>
 
 <style>
@@ -37,22 +32,25 @@
       font-weight: 600;
       line-height: 26px;
       padding-left: 4px;
-      vertical-align: top;
       box-sizing: border-box;
+      vertical-align: top;
     }
 
     &:hover {
-      background-color: rgb(244, 174, 174);
+      opacity: 0.8;
     }
   }
-  .type {
-    width: 150px;
-    color: green;
-    background-color: rgba(238, 250, 14, 0.2);
+  .record[data--focus="true"] {
+    background-color: rgb(216, 220, 143);
   }
-  .name {
+  .key {
+    width: 150px;
+    color: rgb(0, 77, 148);
+    background-color: rgba(250, 104, 14, 0.2);
+  }
+  .value {
     width: calc(100% - 150px);
     color: black;
-    background-color: rgba(38, 250, 14, 0.2);
+    background-color: rgba(14, 250, 234, 0.2);
   }
 </style>

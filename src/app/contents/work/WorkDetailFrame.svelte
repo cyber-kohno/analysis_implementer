@@ -2,6 +2,7 @@
   import store from "../../store/store";
   import WDChooseFile from "./choose-file/WDChooseFile.svelte";
   import WDExecute from "./execute/WDExecute.svelte";
+  import WDResources from "./resource/WDResources.svelte";
   import WorkOperationBuilder from "./WorkOperationBuilder";
 
   $: oprs = (() => {
@@ -20,7 +21,11 @@
 
 {#if opr === "Proc"}
   <WDExecute />
+{:else if opr === "Iterate-Proc"}
+  <WDExecute />
 {:else if opr === "Resources"}
+  <WDResources />
+{:else if opr === "Iterate-Resources"}
   <WDExecute />
 {:else if opr === "File-Choose"}
   <WDChooseFile />

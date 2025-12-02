@@ -1,6 +1,6 @@
 <script lang="ts">
   import store from "../../../store/store";
-  import OperatinButton from "../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../util/button/OperationButton.svelte";
 
   $: transition = (idx: number) => {
     $store.focus.push(idx);
@@ -12,8 +12,8 @@
 </script>
 
 <div class="wrap">
-  <OperatinButton name={"Envs"} callback={toEnvs} />
-  <OperatinButton name={"Works"} callback={toWorks} />
+  <OperationButton name={"Envs"} callback={toEnvs} />
+  <OperationButton name={"Works"} callback={toWorks} />
 </div>
 
 <style>

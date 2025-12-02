@@ -2,7 +2,7 @@
   import store from "../../../store/store";
   import StoreWork from "../../../store/work/storeWork";
   import HalfPanel from "../../../util/HalfPanel.svelte";
-  import OperatinButton from "../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../util/button/OperationButton.svelte";
   import WorkItem from "./WorkItem.svelte";
 
   $: project = (() => {
@@ -21,12 +21,12 @@
 <div class="wrap">
   <HalfPanel>
     <div class="left">
-      <OperatinButton name={"Add Execute"} callback={() => add("execute")} />
-      <OperatinButton
+      <OperationButton name={"Add Execute"} callback={() => add("execute")} />
+      <OperationButton
         name={"Add Execute Iterate"}
         callback={() => add("execute-iterate")}
       />
-      <OperatinButton
+      <OperationButton
         name={"Add File Choose"}
         callback={() => add("file-choose")}
       />

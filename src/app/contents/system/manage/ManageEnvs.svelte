@@ -3,7 +3,7 @@
   import store from "../../../store/store";
   import HalfPanel from "../../../util/HalfPanel.svelte";
   import Wrap from "../../../util/layout/Wrap.svelte";
-  import OperatinButton from "../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../util/button/OperationButton.svelte";
   import EnvItem from "./EnvItem.svelte";
   import LabelRecord from "../../../util/LabelRecord.svelte";
   import TextInput from "../../../util/form/TextInput.svelte";
@@ -51,6 +51,7 @@
   $: update = () => {
     project.envVars[$focusIndex] = { key: $key, value: $value };
     project.envVars = project.envVars.slice();
+    $focusIndex = -1;
   };
   $: del = () => {
     if ($focusIndex === -1) throw new Error();
@@ -64,7 +65,7 @@
   <HalfPanel>
     <Wrap>
       <div class="record">
-        <OperatinButton name="Add" callback={add} isLineup width={100} />
+        <OperationButton name="Add" callback={add} isLineup width={100} />
       </div>
       <div class="main">
         {#each project.envVars as env, i}
@@ -96,14 +97,14 @@
           />
         </div>
         <div class="record">
-          <OperatinButton
+          <OperationButton
             name="Delete"
             callback={del}
             isDisable={$focusIndex === -1}
             isLineup
             width={140}
           />
-          <OperatinButton
+          <OperationButton
             name="Update"
             callback={update}
             isLineup

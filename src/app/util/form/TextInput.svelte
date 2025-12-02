@@ -1,18 +1,21 @@
 <script lang="ts">
   export let isRequied = false;
+  export let readonly = false;
   export let width: string = "100px";
   export let value: string;
-  export let set: (value: string) => void;
+  export let set: (value: string) => void = () => {};
 </script>
 
 <input
   type="text"
-  style:width={width}
+  style:width
   {value}
   oninput={(e) => {
     set(e.currentTarget.value);
   }}
-  data--blank={isRequied && value === ''}
+  {readonly}
+  data--readonly={readonly}
+  data--blank={isRequied && value === ""}
 />
 
 <style>
@@ -27,7 +30,11 @@
     border-radius: 2px;
     font-size: 14px;
   }
-    input[data--blank="true"] {
-        background-color: #ff0;
-    }
+  input[data--blank="true"] {
+    background-color: #ff0;
+  }
+  input[data--readonly="true"] {
+    color: rgb(0, 0, 184);
+    background-color: #d2d2d2;
+  }
 </style>

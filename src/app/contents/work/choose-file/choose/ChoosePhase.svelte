@@ -5,7 +5,7 @@
   import type StoreFileChoose from "../../../../store/work/storeFileChoose";
   import StoreWork from "../../../../store/work/storeWork";
   import store from "../../../../store/store";
-  import OperatinButton from "../../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../../util/button/OperationButton.svelte";
 
   export let root: StoreFileChoose.UsableNode;
 
@@ -59,14 +59,14 @@
 </script>
 
 <div class="operation-div">
-  <OperatinButton
+  <OperationButton
     name={!$isFlat ? "Flat" : "Tree"}
     width={120}
     isDisable={false}
     callback={toggleView}
     isLineup
   />
-  <OperatinButton
+  <OperationButton
     name={!$isFlat ? "|← →|" : "|→ ←|"}
     width={90}
     isDisable={false}
@@ -90,14 +90,14 @@
   </div>
 </div>
 <div class="operation-div">
-  <OperatinButton
+  <OperationButton
     name={"Cancel"}
     width={140}
     isDisable={false}
     callback={cancel}
     isLineup
   />
-  <OperatinButton
+  <OperationButton
     name={"Transfer"}
     width={160}
     isDisable={false}

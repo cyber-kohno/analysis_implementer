@@ -23,9 +23,14 @@
     loader.config({ monaco: monacoEditor.default });
     monaco = await loader.init();
 
+    console.log(declares);
     // ① 型定義を投げ込む
     const typescript = monaco.languages.typescript as any;
-    typescript.typescriptDefaults.addExtraLib(`${declares.join()}`, "global.d.ts");
+    // typescript.typescriptDefaults.addExtraLib([], "global.d.ts");
+    typescript.typescriptDefaults.addExtraLib(
+      `${declares.join()}`,
+      "global.d.ts"
+    );
 
     // Your monaco instance is ready, let's display some code!
     editor = monaco.editor.create(editorDiv, {

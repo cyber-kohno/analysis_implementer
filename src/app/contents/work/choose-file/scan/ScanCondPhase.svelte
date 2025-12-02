@@ -8,7 +8,7 @@
   import store from "../../../../store/store";
   import type StoreFileChoose from "../../../../store/work/storeFileChoose";
   import NumberInput from "../../../../util/form/NumberInput.svelte";
-  import OperatinButton from "../../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../../util/button/OperationButton.svelte";
 
   let count = writable<number>(-1);
   let isSearch = writable(false);
@@ -138,8 +138,8 @@
   <FileNameFilterConds />
 </div>
 <div class="operation-div">
-  <OperatinButton name={"Reset"} width={160} callback={reset} isLineup />
-  <OperatinButton
+  <OperationButton name={"Reset"} width={160} callback={reset} isLineup />
+  <OperationButton
     name={"Scan"}
     width={160}
     isDisable={!isRequestOk()}

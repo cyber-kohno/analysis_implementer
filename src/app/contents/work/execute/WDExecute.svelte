@@ -6,10 +6,16 @@
   import HalfPanel from "../../../util/HalfPanel.svelte";
   import Wrap from "../../../util/layout/Wrap.svelte";
   import MonacoEditor from "../../../util/MonacoEditor.svelte";
-  import OperatinButton from "../../../util/OperatinButton.svelte";
+  import OperationButton from "../../../util/button/OperationButton.svelte";
   import TypescriptUtil from "../../../util/TypescriptUtil";
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
+  $: resources = detail.resouces;
+
+  $: declares = [
+          ...resources.map((r) => `declare const $${r.varName}: ${r.type}`),
+          `declare const $output: (str: string) => void;`,
+        ];
 
   $: cancel = () => {
     detail.output = null;
@@ -23,11 +29,13 @@
       const output = (str: string) => {
         detail.output += `${str}`;
       };
+      const args = resources.map((r) => `$${r.varName}`);
+      args.push("$output");
       const func = new Function(
-        "$output",
+        ...args,
         TypescriptUtil.transpileTsToJs(detail.source)
       );
-      func(output);
+      func(...resources.map(r => r.source), output);
     };
 
     start().catch((e) => {
@@ -46,16 +54,14 @@
           detail.source = v;
         }}
         theme="vs-dark"
-      declares={[
-        `declare const $output: (str: string) => void;`,
-      ]}
+        {declares}
       />
       {#if detail.output != null}
         <div class="blind"></div>
       {/if}
     </div>
     <div class="record">
-      <OperatinButton
+      <OperationButton
         name={"Execute"}
         callback={execute}
         isLineup
@@ -77,7 +83,7 @@
       </Wrap>
     </div>
     <div class="record">
-      <OperatinButton
+      <OperationButton
         name={"Cancel"}
         callback={cancel}
         isLineup

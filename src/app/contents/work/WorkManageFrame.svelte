@@ -3,7 +3,7 @@
   import TextInput from "../../util/form/TextInput.svelte";
   import HalfPanel from "../../util/HalfPanel.svelte";
   import LabelRecord from "../../util/LabelRecord.svelte";
-  import OperatinButton from "../../util/OperatinButton.svelte";
+  import OperationButton from "../../util/button/OperationButton.svelte";
   import WorkOperationBuilder from "./WorkOperationBuilder";
 
   $: work = (() => {
@@ -42,7 +42,7 @@
 <HalfPanel>
   <div class="right">
     {#each oprs as opr, index}
-      <OperatinButton name={opr} callback={() => setFocus(index)} />
+      <OperationButton name={opr} callback={() => setFocus(index)} />
     {/each}
   </div>
 </HalfPanel>

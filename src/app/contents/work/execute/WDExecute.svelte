@@ -8,14 +8,38 @@
   import MonacoEditor from "../../../util/MonacoEditor.svelte";
   import OperationButton from "../../../util/button/OperationButton.svelte";
   import TypescriptUtil from "../../../util/TypescriptUtil";
+  import DataUtil from "../../../util/data/dataUtil";
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
   $: resources = detail.resouces;
 
   $: declares = [
-          ...resources.map((r) => `declare const $${r.varName}: ${r.type}`),
-          `declare const $output: (str: string) => void;`,
-        ];
+    ...resources.map((r) => {
+      let source = "";
+      if (r.retention === "static") {
+        if (r.source == undefined) throw new Error();
+        source = r.source;
+      } else if (r.retention === "dynamic") {
+      }
+      const varName = r.varName;
+      let type: string = "string";
+      let value: any = source;
+      if (r.convert != undefined) {
+        const names = DataUtil.convertTableToColNames(source, r.convert);
+        type = DataUtil.convertNamesToTypeDefs(names) + "[]";
+        value = DataUtil.convertTableToJson(source, r.convert);
+      }
+      const declareDef = `declare const $${varName}: ${type}`;
+      console.log(declareDef);
+      return { name: `$${r.varName}`, value, declareDef };
+    }),
+    // 出力関数
+    {
+      name: "$output",
+      value: (str: string) => (detail.output += `${str}`),
+      declareDef: `declare const $output: (str: string) => void;`,
+    },
+  ];
 
   $: cancel = () => {
     detail.output = null;
@@ -26,16 +50,11 @@
     detail.output = "";
 
     const start = async () => {
-      const output = (str: string) => {
-        detail.output += `${str}`;
-      };
-      const args = resources.map((r) => `$${r.varName}`);
-      args.push("$output");
       const func = new Function(
-        ...args,
+        ...declares.map((d) => d.name),
         TypescriptUtil.transpileTsToJs(detail.source)
       );
-      func(...resources.map(r => r.source), output);
+      func(...declares.map((d) => d.value));
     };
 
     start().catch((e) => {
@@ -54,7 +73,7 @@
           detail.source = v;
         }}
         theme="vs-dark"
-        {declares}
+        declares={declares.map((d) => d.declareDef)}
       />
       {#if detail.output != null}
         <div class="blind"></div>
@@ -66,7 +85,7 @@
         callback={execute}
         isLineup
         width={150}
-        isDisable={detail.output != null}
+        isDisable={detail.source === "" || detail.output != null}
       />
     </div>
   </div>

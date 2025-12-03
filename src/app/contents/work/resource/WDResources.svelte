@@ -19,9 +19,7 @@
   const retention = writable<StoreResource.RetentionMethod>("static");
   const filePath = writable<string>("");
   const source = writable<string>("");
-  const header = writable<string>("");
   const convert = writable<StoreResource.ConvertMethod | undefined>(undefined);
-  const type = writable<string>("string");
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
 
@@ -49,16 +47,13 @@
       $varName = resource.varName;
       $retention = resource.retention;
       $convert = resource.convert;
-      $filePath = resource.filePath ?? '';
-      $header = resource.header ?? '';
-      $source = resource.source ?? '';
-      $type = resource.type;
+      $filePath = resource.filePath ?? "";
+      $source = resource.source ?? "";
     }
   };
   $: toggleCsvConvert = () => {
     if ($convert === "csv") {
       $convert = undefined;
-      $type = "string";
     } else {
       $convert = "csv";
     }
@@ -66,7 +61,6 @@
   $: toggleTsvConvert = () => {
     if ($convert === "tsv") {
       $convert = undefined;
-      $type = "string";
     } else {
       $convert = "tsv";
     }
@@ -78,9 +72,7 @@
       retention: $retention,
       filePath: $filePath === "" ? undefined : $filePath,
       source: $source === "" ? undefined : $source,
-      header: $header === "" ? undefined : $header,
       convert: $convert,
-      type: $type,
     };
     detail.resouces = detail.resouces.slice();
     $focusIndex = -1;
@@ -140,10 +132,7 @@
             <LabelRecord name={"source"} />
             <Record height={150}>
               <Wrap>
-                <Textarea
-                  value={$source ?? ""}
-                  set={(v) => ($source = v)}
-                />
+                <Textarea value={$source ?? ""} set={(v) => ($source = v)} />
               </Wrap>
             </Record>
           {:else if $retention === "dynamic"}
@@ -154,14 +143,6 @@
               width={"calc(100% - 4px)"}
               isRequied
             />
-          {/if}
-          {#if $retention === "dynamic"}
-            <LabelRecord name={"header"} />
-            <Record height={60}>
-              <Wrap>
-                <Textarea value={$filePath} set={(v) => ($filePath = v)} />
-              </Wrap>
-            </Record>
           {/if}
           <LabelRecord name={"type_convert"} />
           <Record>
@@ -178,16 +159,6 @@
               isActive={$convert === "tsv"}
             />
           </Record>
-          <LabelRecord name={"type"} />
-          {#if $convert == undefined}
-            <TextInput value={$type} width={"300px"} readonly />
-          {:else}
-            <Record height={150}>
-              <Wrap>
-                <Textarea value={$filePath} set={(v) => ($filePath = v)} />
-              </Wrap>
-            </Record>
-          {/if}
         </div>
         <Record>
           <OperationButton

@@ -7,17 +7,14 @@ namespace StoreResource {
         retention: RetentionMethod;
         source?: string;
         filePath?: string;
-        header?: string;
         convert?: ConvertMethod;
-        type: string;
     }
 
     export const getInitial = (varName: string): Props => {
         return {
             varName,
             retention: 'static',
-            source: '',
-            type: 'string'
+            source: ''
         }
     }
 }

@@ -53,6 +53,9 @@
     project.envVars = project.envVars.slice();
     $focusIndex = -1;
   };
+  $: cancel = () => {
+    $focusIndex = -1;
+  };
   $: del = () => {
     if ($focusIndex === -1) throw new Error();
     project.envVars.splice($focusIndex, 1);
@@ -102,13 +105,19 @@
             callback={del}
             isDisable={$focusIndex === -1}
             isLineup
-            width={140}
+            width={120}
+          />
+          <OperationButton
+            name="Cancel"
+            callback={cancel}
+            isLineup
+            width={120}
           />
           <OperationButton
             name="Update"
             callback={update}
             isLineup
-            width={140}
+            width={120}
           />
         </div>
       {/if}

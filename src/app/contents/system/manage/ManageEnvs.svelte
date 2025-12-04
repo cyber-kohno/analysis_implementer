@@ -7,6 +7,7 @@
   import EnvItem from "./EnvItem.svelte";
   import LabelRecord from "../../../util/LabelRecord.svelte";
   import TextInput from "../../../util/form/TextInput.svelte";
+  import Record from "../../../util/layout/Record.svelte";
 
   const focusIndex = writable<number>(-1);
   const key = writable<string>("");
@@ -99,7 +100,7 @@
             width={"calc(100% - 4px)"}
           />
         </div>
-        <div class="record">
+        <Record align='right'>
           <OperationButton
             name="Delete"
             callback={del}
@@ -119,7 +120,7 @@
             isLineup
             width={120}
           />
-        </div>
+        </Record>
       {/if}
     </Wrap>
   </HalfPanel>

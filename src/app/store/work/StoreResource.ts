@@ -1,13 +1,13 @@
 namespace StoreResource {
 
     export type RetentionMethod = 'static' | 'dynamic';
-    export type ConvertMethod = 'csv' | 'tsv';
+    export type ParseMethod = 'csv' | 'tsv';
     export type Props = {
         varName: string;
         retention: RetentionMethod;
         source?: string;
         filePath?: string;
-        convert?: ConvertMethod;
+        parse?: ParseMethod;
     }
 
     export const getInitial = (varName: string): Props => {

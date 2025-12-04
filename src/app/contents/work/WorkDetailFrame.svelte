@@ -1,7 +1,8 @@
 <script lang="ts">
   import store from "../../store/store";
   import WDChooseFile from "./choose-file/WDChooseFile.svelte";
-  import WDExecute from "./execute/WDExecute.svelte";
+  import WDEachProcProgram from "./execute/WDEachProcProgram.svelte";
+  import WDSingleProcProgram from "./execute/WDSingleProcProgram.svelte";
   import WDResources from "./resource/WDResources.svelte";
   import WorkOperationBuilder from "./WorkOperationBuilder";
 
@@ -19,14 +20,14 @@
   })();
 </script>
 
-{#if opr === "Proc"}
-  <WDExecute />
-{:else if opr === "Iterate-Proc"}
-  <WDExecute />
+{#if opr === "Program"}
+  <WDSingleProcProgram />
+{:else if opr === "Iterate-Program"}
+  <WDEachProcProgram />
 {:else if opr === "Resources"}
   <WDResources />
-{:else if opr === "Iterate-Resources"}
-  <WDExecute />
+{:else if opr === "Iterate-Target"}
+  <WDSingleProcProgram />
 {:else if opr === "File-Choose"}
   <WDChooseFile />
 {/if}

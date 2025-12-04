@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/api": "^2.9.1",
     "@tauri-apps/plugin-opener": "^2",
     "@types/wicg-file-system-access": "^2023.10.7",
     "highlight.js": "^11.11.1",

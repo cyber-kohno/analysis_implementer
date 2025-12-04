@@ -1,6 +1,6 @@
 <script lang="ts">
   import store from "../../../store/store";
-  import type StoreExecute from "../../../store/work/StoreExecute";
+  import type StoreExecute from "../../../store/work/StoreSingleProc";
   import StoreWork from "../../../store/work/storeWork";
   import Textarea from "../../../util/form/Textarea.svelte";
   import HalfPanel from "../../../util/HalfPanel.svelte";
@@ -24,13 +24,13 @@
       const varName = r.varName;
       let type: string = "string";
       let value: any = source;
-      if (r.convert != undefined) {
-        const names = DataUtil.convertTableToColNames(source, r.convert);
+      if (r.parse != undefined) {
+        const names = DataUtil.convertTableToColNames(source, r.parse);
         type = DataUtil.convertNamesToTypeDefs(names) + "[]";
-        value = DataUtil.convertTableToJson(source, r.convert);
+        value = DataUtil.convertTableToJson(source, r.parse);
       }
       const declareDef = `declare const $${varName}: ${type}`;
-      console.log(declareDef);
+      // console.log(declareDef);
       return { name: `$${r.varName}`, value, declareDef };
     }),
     // 出力関数
@@ -67,14 +67,14 @@
 <HalfPanel>
   <div class="left">
     <div class="main">
-      <MonacoEditor
+      <!-- <MonacoEditor
         value={detail.source}
         onChange={(v) => {
           detail.source = v;
         }}
         theme="vs-dark"
         declares={declares.map((d) => d.declareDef)}
-      />
+      /> -->
       {#if detail.output != null}
         <div class="blind"></div>
       {/if}

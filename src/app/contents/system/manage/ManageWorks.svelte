@@ -21,10 +21,10 @@
 <div class="wrap">
   <HalfPanel>
     <div class="left">
-      <OperationButton name={"Add Execute"} callback={() => add("execute")} />
+      <OperationButton name={"Add Execute"} callback={() => add("single-proc")} />
       <OperationButton
         name={"Add Execute Iterate"}
-        callback={() => add("execute-iterate")}
+        callback={() => add("each-proc")}
       />
       <OperationButton
         name={"Add File Choose"}

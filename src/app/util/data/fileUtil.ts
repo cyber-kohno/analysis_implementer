@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import store from '../../store/store';
 
 namespace FileUtil {
-    const FILE_EXTENSION: string = 'animp';
+    const FILE_EXTENSION: string = '1204.animp';
 
     /**
      * 文字列を圧縮する

@@ -1,9 +1,10 @@
 import type { Store } from "../store";
-import StoreExecute from "./StoreExecute";
+import StoreEachProc from "./StoreEachProc";
+import StoreSingleProc from "./StoreSingleProc";
 import StoreFileChoose from "./storeFileChoose";
 
 namespace StoreWork {
-    export type WorkType = 'file-choose' | 'execute' | 'execute-iterate'
+    export type WorkType = 'file-choose' | 'single-proc' | 'each-proc'
 
     export type Props = {
         type: WorkType;
@@ -16,7 +17,8 @@ namespace StoreWork {
 
         const getDetail = () => {
             switch (type) {
-                case 'execute': return StoreExecute.getInitial();
+                case 'single-proc': return StoreSingleProc.getInitial();
+                case 'each-proc': return StoreEachProc.getInitial();
                 case 'file-choose': return StoreFileChoose.getInitial();
                 default: throw new Error();
             }

@@ -2,16 +2,16 @@ import type StoreResource from "../../store/work/StoreResource";
 
 namespace DataUtil {
 
-    export const convertTableToJson = (source: string, convMethod: StoreResource.ConvertMethod) => {
+    export const convertTableToJson = (source: string, convMethod: StoreResource.ParseMethod) => {
         const table = source
             .split('\n')
             .map(r => {
                 if (convMethod === 'csv') {
                     return r.split(',').map(col => col.trim().replaceAll('"', ''));
                 } else if (convMethod === 'tsv') {
-                    r.split('\t');
+                    return r.split('\t');
                 }
-                throw new Error();
+                throw new Error(`${convMethod} is undefined.`);
             });
         // console.log(table);
         const header = table[0];
@@ -27,7 +27,7 @@ namespace DataUtil {
         // console.log(json);
         return json;
     }
-    export const convertTableToColNames = (source: string, convMethod: StoreResource.ConvertMethod) => {
+    export const convertTableToColNames = (source: string, convMethod: StoreResource.ParseMethod) => {
         const header = source.split('\n')[0];
         if (convMethod === 'csv') {
             return header.split(',').map(col => col.trim().replaceAll('"', ''));

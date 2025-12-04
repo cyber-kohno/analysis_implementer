@@ -7,7 +7,7 @@
   import LabelRecord from "../../../util/LabelRecord.svelte";
   import TextInput from "../../../util/form/TextInput.svelte";
   import StoreWork from "../../../store/work/storeWork";
-  import type StoreExecute from "../../../store/work/StoreExecute";
+  import type StoreExecute from "../../../store/work/StoreSingleProc";
   import StoreResource from "../../../store/work/StoreResource";
   import ResourceItem from "./ResourceItem.svelte";
   import OperationSwitch from "../../../util/button/OperationSwitch.svelte";
@@ -19,7 +19,7 @@
   const retention = writable<StoreResource.RetentionMethod>("static");
   const filePath = writable<string>("");
   const source = writable<string>("");
-  const convert = writable<StoreResource.ConvertMethod | undefined>(undefined);
+  const convert = writable<StoreResource.ParseMethod | undefined>(undefined);
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
 
@@ -46,7 +46,7 @@
       const resource = detail.resouces[$focusIndex];
       $varName = resource.varName;
       $retention = resource.retention;
-      $convert = resource.convert;
+      $convert = resource.parse;
       $filePath = resource.filePath ?? "";
       $source = resource.source ?? "";
     }
@@ -66,13 +66,16 @@
     }
   };
 
+  $: cancel = () => {
+    $focusIndex = -1;
+  };
   $: update = () => {
     detail.resouces[$focusIndex] = {
       varName: $varName,
       retention: $retention,
       filePath: $filePath === "" ? undefined : $filePath,
       source: $source === "" ? undefined : $source,
-      convert: $convert,
+      parse: $convert,
     };
     detail.resouces = detail.resouces.slice();
     $focusIndex = -1;
@@ -144,7 +147,7 @@
               isRequied
             />
           {/if}
-          <LabelRecord name={"type_convert"} />
+          <LabelRecord name={"parse_method"} />
           <Record>
             <OperationSwitch
               name="CSV to JSON"
@@ -160,19 +163,25 @@
             />
           </Record>
         </div>
-        <Record>
+        <Record align='right'>
           <OperationButton
             name="Delete"
             callback={del}
             isDisable={$focusIndex === -1}
             isLineup
-            width={140}
+            width={120}
+          />
+          <OperationButton
+            name="Cancel"
+            callback={cancel}
+            isLineup
+            width={120}
           />
           <OperationButton
             name="Update"
             callback={update}
             isLineup
-            width={140}
+            width={120}
           />
         </Record>
       {/if}

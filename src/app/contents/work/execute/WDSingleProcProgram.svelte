@@ -16,6 +16,7 @@
   $: declares = [
     ...resources.map((r) => {
       let source = "";
+      console.log(r);
       if (r.retention === "static") {
         if (r.source == undefined) throw new Error();
         source = r.source;

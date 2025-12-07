@@ -73,8 +73,8 @@
     detail.resouces[$focusIndex] = {
       varName: $varName,
       retention: $retention,
-      filePath: $filePath === "" ? undefined : $filePath,
-      source: $source === "" ? undefined : $source,
+      filePath: $retention === "static" ? undefined : $filePath,
+      source: $retention === "dynamic" ? undefined : $source,
       parse: $convert,
     };
     detail.resouces = detail.resouces.slice();

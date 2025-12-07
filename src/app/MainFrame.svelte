@@ -14,7 +14,7 @@
     window.addEventListener("keydown", (e) => {
       if (
         e.ctrlKey && // Ctrl キーが押されている
-        (e.key === "s" || e.key === "S" || e.keyCode === 83)
+        (e.key === "s" || e.key === "S")
       ) {
         e.preventDefault(); // ブラウザの「ページを保存」ダイアログをブロック
         e.stopPropagation(); // 必要なら他のハンドラへも流れない

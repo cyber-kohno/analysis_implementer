@@ -23,7 +23,7 @@
     loader.config({ monaco: monacoEditor.default });
     monaco = await loader.init();
 
-    console.log(declares);
+    // console.log(declares);
     // ① 型定義を投げ込む
     const typescript = monaco.languages.typescript as any;
     // typescript.typescriptDefaults.addExtraLib([], "global.d.ts");
@@ -47,6 +47,17 @@
       onChange(newVal); // ← ここがコールバック呼び出し
     });
   });
+
+  $: {
+    if (monaco) {
+      const typescript = monaco.languages.typescript as any;
+      // typescript.typescriptDefaults.addExtraLib([], "global.d.ts");
+      typescript.typescriptDefaults.addExtraLib(
+        `${declares.join()}`,
+        "global.d.ts"
+      );
+    }
+  }
 
   onDestroy(() => {
     editor?.dispose();

@@ -4,8 +4,15 @@
   import ProjectFrame from "./contents/system/ProjectFrame.svelte";
   import store from "./store/store";
   import FileUtil from "./util/data/fileUtil";
+  import { invoke } from "@tauri-apps/api/core";
+  import { listen } from "@tauri-apps/api/event";
 
-  onMount(() => {
+  listen("tauri://file-drop", (event) => {
+    alert(event.payload);
+  });
+
+  let args: string[] | null = null;
+  onMount(async () => {
     const handler = (e: MouseEvent) => {
       e.preventDefault();
     };
@@ -26,12 +33,17 @@
     });
     window.addEventListener("contextmenu", handler);
 
-    // クリーンアップ（コンポーネントが破棄されるとき）
-    return () => {
-      window.removeEventListener("contextmenu", handler);
-    };
+    args = (await invoke("get_cli_args")) as string[];
+
+    alert(args);
+    // // クリーンアップ（コンポーネントが破棄されるとき）
+    // return () => {
+    //   window.removeEventListener("contextmenu", handler);
+    // };
   });
 </script>
 
-<SystemMenu />
-<ProjectFrame />
+{#if args != null}
+  <SystemMenu />
+  <ProjectFrame />
+{/if}

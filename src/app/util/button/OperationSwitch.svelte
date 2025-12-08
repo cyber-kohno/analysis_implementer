@@ -2,7 +2,6 @@
   export let isDisable: boolean = false;
   export let name: string;
   export let callback: () => void = () => {};
-  export let isLineup = false;
   export let width = 0;
   export let isActive = false;
 </script>
@@ -10,14 +9,13 @@
 <button
   data--active={isActive}
   data--disable={isDisable}
-  data--lineup={isLineup}
   onclick={callback}
   style:width={width === 0 ? "none" : `${width}px`}>{name}</button
 >
 
 <style>
   button {
-    display: block;
+    display: inline-block;
     position: relative;
     background-color: rgb(218, 241, 212);
     height: 24px;
@@ -41,9 +39,5 @@
   button[data--disable="true"] {
     opacity: 0.4;
     pointer-events: none;
-  }
-  button[data--lineup="true"] {
-    display: inline-block;
-    margin: 3px 4px 0 0;
   }
 </style>

@@ -7,6 +7,7 @@ namespace StoreResource {
         retention: RetentionMethod;
         source?: string;
         filePath?: string;
+        encoding?: 'utf8' | 'sjis';
         parse?: ParseMethod;
     }
 

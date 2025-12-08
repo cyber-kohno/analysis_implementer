@@ -20,6 +20,7 @@
   const filePath = writable<string>("");
   const source = writable<string>("");
   const convert = writable<StoreResource.ParseMethod | undefined>(undefined);
+  const encoding = writable<"utf8" | "sjis">("utf8");
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
 
@@ -49,6 +50,7 @@
       $convert = resource.parse;
       $filePath = resource.filePath ?? "";
       $source = resource.source ?? "";
+      $encoding = resource.encoding ?? "utf8";
     }
   };
   $: toggleCsvConvert = () => {
@@ -75,6 +77,7 @@
       retention: $retention,
       filePath: $retention === "static" ? undefined : $filePath,
       source: $retention === "dynamic" ? undefined : $source,
+      encoding: $retention === "static" ? undefined : $encoding,
       parse: $convert,
     };
     detail.resouces = detail.resouces.slice();
@@ -121,13 +124,11 @@
             <OperationSwitch
               name="Static"
               callback={() => ($retention = "static")}
-              isLineup
               isActive={$retention === "static"}
             />
             <OperationSwitch
               name="Dinamic"
               callback={() => ($retention = "dynamic")}
-              isLineup
               isActive={$retention === "dynamic"}
             />
           </Record>
@@ -146,24 +147,35 @@
               width={"calc(100% - 4px)"}
               isRequied
             />
+            <LabelRecord name={"encode"} />
+            <Record>
+              <OperationSwitch
+                name="UTF8"
+                callback={() => ($encoding = "utf8")}
+                isActive={$encoding === "utf8"}
+              />
+              <OperationSwitch
+                name="SJIS"
+                callback={() => ($encoding = "sjis")}
+                isActive={$encoding === "sjis"}
+              />
+            </Record>
           {/if}
           <LabelRecord name={"parse_method"} />
           <Record>
             <OperationSwitch
               name="CSV to JSON"
               callback={toggleCsvConvert}
-              isLineup
               isActive={$convert === "csv"}
             />
             <OperationSwitch
               name="TSV to JSON"
               callback={toggleTsvConvert}
-              isLineup
               isActive={$convert === "tsv"}
             />
           </Record>
         </div>
-        <Record align='right'>
+        <Record align="right">
           <OperationButton
             name="Delete"
             callback={del}

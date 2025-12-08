@@ -1,6 +1,7 @@
 <script lang="ts">
   import store from "../../store/store";
   import WDChooseFile from "./choose-file/WDChooseFile.svelte";
+  import WDEachTarget from "./each/WDEachTarget.svelte";
   import WDEachProcProgram from "./execute/WDEachProcProgram.svelte";
   import WDSingleProcProgram from "./execute/WDSingleProcProgram.svelte";
   import WDResources from "./resource/WDResources.svelte";
@@ -27,7 +28,7 @@
 {:else if opr === "Resources"}
   <WDResources />
 {:else if opr === "Iterate-Target"}
-  <WDSingleProcProgram />
+  <WDEachTarget />
 {:else if opr === "File-Choose"}
   <WDChooseFile />
 {/if}

@@ -11,12 +11,12 @@
 </script>
 
 <HalfPanel>
-  <Wrap><ScanCondPhase /></Wrap>
+  <Wrap><ScanCondPhase {detail}/></Wrap>
 </HalfPanel>
 <HalfPanel>
   <Wrap>
     {#if detail.directoryTree != null}
-      <ChoosePhase root={detail.directoryTree} />
+      <ChoosePhase {detail} />
     {/if}
   </Wrap>
 </HalfPanel>

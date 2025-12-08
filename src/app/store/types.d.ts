@@ -28,5 +28,9 @@ export type KeyValue = {
   key: string;
   value: string;
 }
+export type FileRequest = {
+  filePath: string;
+  encoding: 'utf8' | 'sjis';
+}
 
 // export type ChannelType = 'root' | 'category' | 'item';

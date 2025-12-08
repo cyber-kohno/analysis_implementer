@@ -4,17 +4,16 @@
   import DirNameFilterConds from "./DirNameFilterConds.svelte";
   import { writable } from "svelte/store";
   import FileNameFilterConds from "./FileNameFilterConds.svelte";
-  import StoreWork from "../../../../store/work/storeWork";
-  import store from "../../../../store/store";
   import type StoreFileChoose from "../../../../store/work/storeFileChoose";
   import NumberInput from "../../../../util/form/NumberInput.svelte";
   import OperationButton from "../../../../util/button/OperationButton.svelte";
+  import store from "../../../../store/store";
 
   let count = writable<number>(-1);
   let isSearch = writable(false);
   let scalnningDispDir = writable<string[]>([]);
 
-  $: detail = StoreWork.getDetail($store) as StoreFileChoose.Props;
+  export let detail: StoreFileChoose.Props;
   $: req = detail.scanRequest;
 
   $: isRequestOk = () => {
@@ -55,7 +54,7 @@
     const doneUnlisten = await listen("progress_done", () => {
       unlisten(); // 解除
       doneUnlisten();
-      console.log("complete!");
+      // console.log("complete!");
       $isSearch = false;
     });
 
@@ -90,6 +89,7 @@
         res.node,
         req.rootPath.split("\\").slice(0, -1).join("\\")
       );
+      $store = { ...$store };
     } catch (e) {
       console.error("Error:", e);
       alert("指定したディレクトリが不正です。");

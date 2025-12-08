@@ -2,16 +2,12 @@
   import { invoke } from "@tauri-apps/api/core";
   import type StoreFileChoose from "../../../../store/work/storeFileChoose";
   import store from "../../../../store/store";
-  import StoreWork from "../../../../store/work/storeWork";
 
   export let item: StoreFileChoose.NodeDispProps;
   export let dir: string | null = null;
 
-  $: detail = StoreWork.getDetail($store) as StoreFileChoose.Props;
-
   $: invalidate = () => {
-    if (detail.directoryTree == null) throw new Error();
-    detail.directoryTree = { ...detail.directoryTree };
+    $store = { ...$store };
   };
 
   $: toggleOpen = () => {

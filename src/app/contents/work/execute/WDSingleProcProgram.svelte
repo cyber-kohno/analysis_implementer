@@ -1,6 +1,6 @@
 <script lang="ts">
   import store from "../../../store/store";
-  import type StoreExecute from "../../../store/work/StoreSingleProc";
+  import type StoreSingleProc from "../../../store/work/StoreSingleProc";
   import StoreWork from "../../../store/work/storeWork";
   import Textarea from "../../../util/form/Textarea.svelte";
   import HalfPanel from "../../../util/HalfPanel.svelte";
@@ -9,46 +9,86 @@
   import OperationButton from "../../../util/button/OperationButton.svelte";
   import TypescriptUtil from "../../../util/TypescriptUtil";
   import DataUtil from "../../../util/data/dataUtil";
+  import { onMount } from "svelte";
+  import { invoke } from "@tauri-apps/api/core";
+  import { writable } from "svelte/store";
+  import type { FileRequest } from "../../../store/types";
+  import Record from "../../../util/layout/Record.svelte";
 
-  $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
+  $: project = (() => {
+    const project = $store.project;
+    if (project == null) throw new Error();
+    return project;
+  })();
+
+  $: detail = StoreWork.getDetail($store) as StoreSingleProc.Props;
   $: resources = detail.resouces;
 
-  $: declares = [
-    ...resources.map((r) => {
-      let source = "";
-      console.log(r);
-      if (r.retention === "static") {
-        if (r.source == undefined) throw new Error();
-        source = r.source;
-      } else if (r.retention === "dynamic") {
-      }
-      const varName = r.varName;
-      let type: string = "string";
-      let value: any = source;
-      if (r.parse != undefined) {
-        const names = DataUtil.convertTableToColNames(source, r.parse);
-        type = DataUtil.convertNamesToTypeDefs(names) + "[]";
-        value = DataUtil.convertTableToJson(source, r.parse);
-      }
-      const declareDef = `declare const $${varName}: ${type}`;
-      // console.log(declareDef);
-      return { name: `$${r.varName}`, value, declareDef };
-    }),
-    // 出力関数
-    {
-      name: "$output",
-      value: (str: string) => (detail.output += `${str}`),
-      declareDef: `declare const $output: (str: string) => void;`,
-    },
-  ];
+  type DynamicResource = { key: number; source: string };
+  let dynamicResources = writable<DynamicResource[] | null>(null);
+
+  let outputText = writable<string | null>(null);
+
+  onMount(async () => {
+    const dsList: DynamicResource[] = [];
+    for (const [key, def] of resources.entries()) {
+      if (def.retention === "static") continue;
+
+      const { filePath, encoding } = def;
+      if (filePath == undefined || encoding == undefined) throw new Error();
+      const newFilePath = project.envVars.reduce(
+        (ret, cur) => ret.replaceAll(`%${cur.key}%`, cur.value),
+        filePath
+      );
+      const req: FileRequest = { filePath: newFilePath, encoding };
+      const source = (await invoke("read_file", { req })) as string;
+      dsList.push({ key, source });
+    }
+    $dynamicResources = dsList;
+  });
+
+  $: declares =
+    $dynamicResources == null
+      ? []
+      : [
+          ...resources.map((r, i) => {
+            if ($dynamicResources == null) throw new Error();
+            let source = "";
+            if (r.retention === "static") {
+              if (r.source == undefined) throw new Error();
+              source = r.source;
+            } else if (r.retention === "dynamic") {
+              const def = $dynamicResources.find((d) => d.key === i);
+              if (def == undefined) throw new Error();
+              source = def.source;
+            }
+            const varName = r.varName;
+            let type: string = "string";
+            let value: any = source;
+            if (r.parse != undefined) {
+              const names = DataUtil.convertTableToColNames(source, r.parse);
+              type = DataUtil.convertNamesToTypeDefs(names) + "[]";
+              value = DataUtil.convertTableToJson(source, r.parse);
+            }
+            const declareDef = `declare const $${varName}: ${type}`;
+            // console.log(declareDef);
+            return { name: `$${r.varName}`, value, declareDef };
+          }),
+          // 出力関数
+          {
+            name: "$output",
+            value: (str: string) => ($outputText += `${str}`),
+            declareDef: `declare const $output: (str: string) => void;`,
+          },
+        ];
 
   $: cancel = () => {
-    detail.output = null;
+    $outputText = null;
   };
+
   $: execute = () => {
     // console.log(`execute start! ${req.files.length}`);
-
-    detail.output = "";
+    $outputText = "";
 
     const start = async () => {
       const func = new Function(
@@ -65,54 +105,58 @@
   };
 </script>
 
-<HalfPanel>
-  <div class="left">
-    <div class="main">
-      <MonacoEditor
-        value={detail.source}
-        onChange={(v) => {
-          detail.source = v;
-        }}
-        theme="vs-dark"
-        declares={declares.map((d) => d.declareDef)}
-      />
-      {#if detail.output != null}
-        <div class="blind"></div>
-      {/if}
-    </div>
-    <div class="record">
-      <OperationButton
-        name={"Execute"}
-        callback={execute}
-        isLineup
-        width={150}
-        isDisable={detail.source === "" || detail.output != null}
-      />
-    </div>
-  </div>
-</HalfPanel>
-<HalfPanel>
-  <div class="right">
-    <div class="main">
-      <Wrap>
-        <Textarea
-          value={detail.output ?? ""}
-          readonly
-          disable={detail.output == null}
+{#if $dynamicResources != null}
+  <HalfPanel>
+    <div class="left">
+      <div class="main">
+        <Wrap>
+          <MonacoEditor
+            value={detail.source}
+            onChange={(v) => {
+              detail.source = v;
+            }}
+            theme="vs-dark"
+            declares={declares.map((d) => d.declareDef)}
+          />
+          {#if $outputText != null}
+            <div class="blind"></div>
+          {/if}
+        </Wrap>
+      </div>
+      <Record align="right">
+        <OperationButton
+          name={"Execute"}
+          callback={execute}
+          isLineup
+          width={150}
+          isDisable={detail.source === "" || $outputText != null}
         />
-      </Wrap>
+      </Record>
     </div>
-    <div class="record">
-      <OperationButton
-        name={"Cancel"}
-        callback={cancel}
-        isLineup
-        width={150}
-        isDisable={detail.output == null}
-      />
+  </HalfPanel>
+  <HalfPanel>
+    <div class="right">
+      <div class="main">
+        <Wrap>
+          <Textarea
+            value={$outputText ?? ""}
+            readonly
+            disable={$outputText == null}
+          />
+        </Wrap>
+      </div>
+      <div class="record">
+        <OperationButton
+          name={"Cancel"}
+          callback={cancel}
+          isLineup
+          width={150}
+          isDisable={$outputText == null}
+        />
+      </div>
     </div>
-  </div>
-</HalfPanel>
+  </HalfPanel>
+{/if}
 
 <style>
   .left {

@@ -1,4 +1,4 @@
-use encoding_rs::SHIFT_JIS; // ← Shift‑JIS を取り込む
+use encoding_rs::{SHIFT_JIS, UTF_8, Encoding as RsEncoding};
 use encoding_rs_io::DecodeReaderBytesBuilder;
 use regex::Regex;
 use serde::Deserialize;
@@ -198,26 +198,41 @@ fn wildcard_match(pattern: &str, text: &str) -> bool {
 #[serde(rename_all = "camelCase")] // ここでキャメルケースに変換
 struct FileRequest {
     file_path: String,
+    encoding: Encoding
+}
+#[derive(Deserialize, Debug)]
+#[serde(rename_all = "lowercase")]
+enum Encoding {
+    Utf8,
+    Sjis,
+}
+impl Encoding {
+    pub fn to_rs_encoding(&self) -> &'static RsEncoding {
+        match self {
+            Encoding::Utf8 => UTF_8,
+            Encoding::Sjis => SHIFT_JIS,
+        }
+    }
 }
 
 #[command]
 fn read_file(req: FileRequest) -> String {
     println!("{}", req.file_path);
-    let content = match read_file_to_string(req.file_path) {
+    let content = match read_file_to_string(req.file_path, req.encoding) {
         Ok(text) => text,
         Err(err) => err.to_string(),
     };
     content
 }
 
-fn read_file_to_string<P: AsRef<std::path::Path>>(path: P) -> Result<String, io::Error> {
-    let file = File::open(path)?;
+fn read_file_to_string<P: AsRef<std::path::Path>>(path: P, encoding: Encoding) -> Result<String, io::Error> {
+    let file: File = File::open(path)?;
     let mut buf_reader = BufReader::new(file);
 
     // デフォルトでは UTF‑8 が前提です。別エンコーディングなら `DecodeReaderBytesBuilder::new().encoding(Some(Encoding::for_label(b"shift_jis").unwrap()))` で指定できます
     // let mut decoder = DecodeReaderBytesBuilder::new().build(&mut buf_reader);
     let mut decoder = DecodeReaderBytesBuilder::new()
-        .encoding(Some(SHIFT_JIS)) // ← ここで SJIS を指定
+        .encoding(Some(encoding.to_rs_encoding())) // ← ここで SJIS を指定
         .build(&mut buf_reader); // ← デコーダを作成
 
     let mut s = String::new();
@@ -225,11 +240,16 @@ fn read_file_to_string<P: AsRef<std::path::Path>>(path: P) -> Result<String, io:
     Ok(s)
 }
 
+#[tauri::command]
+fn get_cli_args() -> Vec<String> {
+    std::env::args().collect()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![scan_directory, read_file])
+        .invoke_handler(tauri::generate_handler![scan_directory, read_file, get_cli_args])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

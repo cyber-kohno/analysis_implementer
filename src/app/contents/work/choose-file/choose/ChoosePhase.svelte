@@ -3,22 +3,22 @@
   import { writable } from "svelte/store";
   import ChooseUtil from "./chooseUtil";
   import type StoreFileChoose from "../../../../store/work/storeFileChoose";
-  import StoreWork from "../../../../store/work/storeWork";
-  import store from "../../../../store/store";
   import OperationButton from "../../../../util/button/OperationButton.svelte";
-
-  export let root: StoreFileChoose.UsableNode;
+  import store from "../../../../store/store";
 
   let ref: HTMLDivElement | undefined = undefined;
 
-  $: detail = StoreWork.getDetail($store) as StoreFileChoose.Props;
+  export let detail: StoreFileChoose.Props;
+  $: root = (() => {
+    if (detail.directoryTree == null) throw new Error();
+    return detail.directoryTree;
+  })();
   let scrollTop = 0;
 
   const isFlat = writable<boolean>(false);
 
   $: baseRecords = (() => {
     const list = ChooseUtil.getDispRecords(root, $isFlat);
-    console.log(list.length);
     return list;
   })();
 
@@ -38,6 +38,7 @@
 
   $: cancel = () => {
     detail.directoryTree = null;
+    $store = { ...$store };
   };
   $: toggleView = () => {
     // console.log(dispRecords.length);
@@ -66,13 +67,13 @@
     callback={toggleView}
     isLineup
   />
-  <OperationButton
+  <!-- <OperationButton
     name={!$isFlat ? "|← →|" : "|→ ←|"}
     width={90}
     isDisable={false}
     callback={toggleView}
     isLineup
-  />
+  /> -->
 </div>
 <div class="main">
   <div
@@ -105,6 +106,7 @@
     isLineup
   />
 </div>
+
 <!-- {#if $store.preview != undefined}
   <FloatDialog />
 {/if} -->

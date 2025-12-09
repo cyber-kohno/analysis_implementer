@@ -6,15 +6,25 @@
   let editorDiv: HTMLDivElement | null = null;
   let editor: Monaco.editor.IStandaloneCodeEditor;
 
-  // 初期内容、言語、テーマなど
+  // props
   export let value: string = "";
   export let language: string = "typescript";
-  export let theme: string = "vs";
+  export let theme: Monaco.editor.BuiltinTheme = "vs";
   export let onChange: (value: string) => void = () => {};
 
+  /** 型定義を string[] で受け取る */
   export let declares: string[] = [];
 
   let monaco: typeof Monaco;
+
+  /** ▶ 各コンポーネントごとにユニーク ID を持たせる */
+  const uid = crypto.randomUUID();
+
+  /** ExtraLib の URI をユニーク化して衝突を防ぐ */
+  const declareUri = `global-${uid}.d.ts`;
+
+  /** テーマ名もコンポーネントごとにユニークにする */
+  const themeName = `theme-${uid}`;
 
   onMount(async () => {
     if (!editorDiv) return;
@@ -23,41 +33,38 @@
     loader.config({ monaco: monacoEditor.default });
     monaco = await loader.init();
 
-    // console.log(declares);
-    // ① 型定義を投げ込む
-    const typescript = monaco.languages.typescript as any;
-    // typescript.typescriptDefaults.addExtraLib([], "global.d.ts");
-    typescript.typescriptDefaults.addExtraLib(
-      `${declares.join()}`,
-      "global.d.ts"
-    );
+    // -----------------------------------------
+    // ExtraLib を追加（グローバルに追加されるので URI はユニークにする）
+    // -----------------------------------------
+    if (declares.length > 0) {
+      const typescript = monaco.languages.typescript as any;
+      typescript.typescriptDefaults.addExtraLib(
+        declares.join("\n"),
+        declareUri
+      );
+    }
 
-    // Your monaco instance is ready, let's display some code!
+    // -----------------------------------------
+    // テーマの設定（こちらもグローバルなのでユニーク名必須）
+    // -----------------------------------------
+    monaco.editor.defineTheme(themeName, {
+      base: theme, // vs / vs-dark / hc-black など
+      inherit: true,
+      rules: [],
+      colors: {},
+    });
+
     editor = monaco.editor.create(editorDiv, {
       value,
       language,
-      theme,
-      automaticLayout: true, // 例：ウィンドウリサイズでレイアウトを再計算
-      // …任意のオプション
+      theme: themeName, // 🔥 独立したテーマを適用
+      automaticLayout: true,
     });
 
-    // 内容変更時にイベントを発火
     editor.onDidChangeModelContent(() => {
-      const newVal = editor?.getValue() ?? "";
-      onChange(newVal); // ← ここがコールバック呼び出し
+      onChange(editor.getValue());
     });
   });
-
-  $: {
-    if (monaco) {
-      const typescript = monaco.languages.typescript as any;
-      // typescript.typescriptDefaults.addExtraLib([], "global.d.ts");
-      typescript.typescriptDefaults.addExtraLib(
-        `${declares.join()}`,
-        "global.d.ts"
-      );
-    }
-  }
 
   onDestroy(() => {
     editor?.dispose();

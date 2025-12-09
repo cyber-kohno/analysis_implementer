@@ -15,6 +15,14 @@
   import type { FileRequest } from "../../../store/types";
   import Record from "../../../util/layout/Record.svelte";
   import type StoreEachProc from "../../../store/work/StoreEachProc";
+  import EditorAccordion from "./EditorAccordion.svelte";
+
+  let hiddenStart = writable(false);
+  let fullStart = writable(false);
+  let hiddenEach = writable(false);
+  let fullEach = writable(false);
+  let hiddenEnd = writable(false);
+  let fullEnd = writable(false);
 
   $: project = (() => {
     const project = $store.project;
@@ -110,44 +118,84 @@
   <HalfPanel>
     <div class="left">
       <div class="main">
-        <div class="start-src">
-          <Wrap>
-            <MonacoEditor
-              value={detail.srcStart}
-              onChange={(v) => {
-                detail.srcStart = v;
-              }}
-              theme="vs-dark"
-              declares={declares.map((d) => d.declareDef)}
-            />
-          </Wrap>
-        </div>
-        <div class="each-src">
-          <Wrap>
-            <MonacoEditor
-              value={detail.srcEach}
-              onChange={(v) => {
-                detail.srcEach = v;
-              }}
-              theme="vs-dark"
-              declares={declares
-                .map((d) => d.declareDef)
-                .concat(detail.srcStart)}
-            />
-          </Wrap>
-        </div>
-        <div class="end-src">
-          <Wrap>
-            <MonacoEditor
-              value={detail.srcEnd}
-              onChange={(v) => {
-                detail.srcEnd = v;
-              }}
-              theme="vs-dark"
-              declares={declares.map((d) => d.declareDef)}
-            />
-          </Wrap>
-        </div>
+        <EditorAccordion
+          name="start_proc"
+          rate={30}
+          isHidden={$hiddenStart}
+          isFull={$fullStart}
+          setHidden={() => ($hiddenStart = !$hiddenStart)}
+          setFull={() => {
+            if ($fullStart) {
+              $fullStart = false;
+            } else {
+              $fullStart = true;
+              $hiddenStart = false;
+              $fullEach = $fullEnd = false;
+              $hiddenEach = $hiddenEnd = true;
+            }
+          }}
+        >
+          <MonacoEditor
+            value={detail.srcStart}
+            onChange={(v) => {
+              detail.srcStart = v;
+            }}
+            theme="vs"
+            declares={declares.map((d) => d.declareDef)}
+          />
+        </EditorAccordion>
+        <EditorAccordion
+          name="each_proc"
+          rate={40}
+          isHidden={$hiddenEach}
+          isFull={$fullEach}
+          setHidden={() => ($hiddenEach = !$hiddenEach)}
+          setFull={() => {
+            if ($fullEach) {
+              $fullEach = false;
+            } else {
+              $fullEach = true;
+              $hiddenEach = false;
+              $fullStart = $fullEnd = false;
+              $hiddenStart = $hiddenEnd = true;
+            }
+          }}
+        >
+          <MonacoEditor
+            value={detail.srcEach}
+            onChange={(v) => {
+              detail.srcEach = v;
+            }}
+            theme="vs-dark"
+            declares={declares.map((d) => d.declareDef).concat(detail.srcStart)}
+          />
+        </EditorAccordion>
+        <EditorAccordion
+          name="end_proc"
+          rate={30}
+          isHidden={$hiddenEnd}
+          isFull={$fullEnd}
+          setHidden={() => ($hiddenEnd = !$hiddenEnd)}
+          setFull={() => {
+            if ($fullEnd) {
+              $fullEnd = false;
+            } else {
+              $fullEnd = true;
+              $hiddenEnd = false;
+              $fullStart = $fullEach = false;
+              $hiddenStart = $hiddenEach = true;
+            }
+          }}
+        >
+          <MonacoEditor
+            value={detail.srcEnd}
+            onChange={(v) => {
+              detail.srcEnd = v;
+            }}
+            theme="vs-dark"
+            declares={declares.map((d) => d.declareDef).concat(detail.srcStart)}
+          />
+        </EditorAccordion>
         {#if $outputText != null}
           <div class="blind"></div>
         {/if}
@@ -232,26 +280,5 @@
     background-color: #8888aa22;
     box-sizing: border-box;
     text-align: right;
-  }
-  .start-src {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    height: 30%;
-    /* background-color: #8e4d5d22; */
-  }
-  .each-src {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    height: 40%;
-    /* background-color: #5d92524b; */
-  }
-  .end-src {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    height: 30%;
-    /* background-color: #8282d25c; */
   }
 </style>

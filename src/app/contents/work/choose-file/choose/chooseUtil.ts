@@ -16,13 +16,6 @@ namespace ChooseUtil {
       indents: StoreFileChoose.NodeIndent[],
       isOpen: boolean,
     ): [number, number] => {
-      if (isOpen) {
-        list.push({
-          indents,
-          node,
-          seq: list.length,
-        });
-      }
       let [fileCnt, selectCnt] = [0, 0];
       if (node.child != undefined) {
         const child = node.child;
@@ -52,6 +45,13 @@ namespace ChooseUtil {
       } else {
         fileCnt++;
         selectCnt += node.isSelected ? 1 : 0;
+      }
+      if (isOpen && fileCnt > 0) {
+        list.push({
+          indents,
+          node,
+          seq: list.length,
+        });
       }
       return [fileCnt, selectCnt];
     };

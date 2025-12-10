@@ -44,8 +44,16 @@
     // console.log(dispRecords.length);
     $isFlat = !$isFlat;
   };
-  $: transfer = () => {
-    // ChooseUtil.getSelectedFiles(root).join("\n"),
+  $: copyClipboard = () => {
+    const list = ChooseUtil.getDispRecords(root, true);
+    const text = list
+      .filter((r) => r.node.isSelected)
+      .map(
+        (r) => `${r.node.path}\\${r.node.name}`
+      )
+      .join("\n");
+    navigator.clipboard.writeText(text);
+    alert('The selected element has been saved to the clipboard.');
   };
 
   $: getDir = (item: StoreFileChoose.NodeDispProps) => {
@@ -84,7 +92,7 @@
     }}
   >
     <div class="inner" style:height="{baseRecords.length * 25}px">
-      {#each dispRecords as item, i}
+      {#each dispRecords as item}
         <ChooseRecord {item} dir={getDir(item)} />
       {/each}
     </div>
@@ -99,10 +107,10 @@
     isLineup
   />
   <OperationButton
-    name={"Transfer"}
-    width={160}
+    name={"Clipboard"}
+    width={190}
     isDisable={false}
-    callback={transfer}
+    callback={copyClipboard}
     isLineup
   />
 </div>

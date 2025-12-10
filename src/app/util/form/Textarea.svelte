@@ -29,6 +29,7 @@
   }
   textarea[data--readonly="true"] {
     color: #001d86;
+    background-color: rgb(213, 230, 233);
   }
   textarea[data--disable="true"] {
     opacity: 0.6;

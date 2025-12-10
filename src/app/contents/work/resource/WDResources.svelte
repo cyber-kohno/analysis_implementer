@@ -13,6 +13,10 @@
   import OperationSwitch from "../../../util/button/OperationSwitch.svelte";
   import Textarea from "../../../util/form/Textarea.svelte";
   import Record from "../../../util/layout/Record.svelte";
+  import DataUtil from "../../../util/data/dataUtil";
+  import { invoke } from "@tauri-apps/api/core";
+  import type { FileRequest } from "../../../store/types";
+  import { app } from "@tauri-apps/api";
 
   const focusIndex = writable<number>(-1);
   const varName = writable<string>("");
@@ -21,6 +25,8 @@
   const source = writable<string>("");
   const convert = writable<StoreResource.ParseMethod | undefined>(undefined);
   const encoding = writable<"utf8" | "sjis">("utf8");
+
+  const testData = writable<string | null>(null);
 
   $: detail = StoreWork.getDetail($store) as StoreExecute.Props;
 
@@ -53,7 +59,43 @@
       $encoding = resource.encoding ?? "utf8";
     }
   };
+
+  const testParse = async () => {
+    let src: string | null = null;
+    if ($retention === "static") src = $source;
+    else if ($retention === "dynamic") {
+      const req: FileRequest = { filePath: $filePath, encoding: $encoding };
+      src = (await invoke("read_file", { req })) as string;
+    }
+    if (src == null) throw new Error();
+    const conv = $convert;
+    if (conv == undefined) throw new Error();
+    const records = DataUtil.convertTableToJson(src, conv);
+
+    $testData = "";
+    const append = (str: string) => ($testData += str + "\n");
+    append(`Start parsing the ${$convert}.`);
+    append(`There are ${records.length} records.`);
+    append(`\n★columns`);
+    append(`------------------------`);
+    Object.keys(records[0]).forEach((k) => {
+      append(`・${k}`);
+    });
+    append(`------------------------`);
+    append(`\n★records`);
+    records.forEach((r, i) => {
+      append(`\n〇line ${i}`);
+      append(`-----`);
+      Object.values(r).forEach((v) => {
+        append(`[${v}]`);
+      });
+    });
+    append(`------------------------`);
+    append(`Successful completion!`);
+  };
+
   $: toggleCsvConvert = () => {
+    $testData = null;
     if ($convert === "csv") {
       $convert = undefined;
     } else {
@@ -61,6 +103,7 @@
     }
   };
   $: toggleTsvConvert = () => {
+    $testData = null;
     if ($convert === "tsv") {
       $convert = undefined;
     } else {
@@ -174,6 +217,17 @@
               isActive={$convert === "tsv"}
             />
           </Record>
+          {#if $convert != undefined}
+            <LabelRecord name={"preview_parse"} />
+            <OperationButton name="Test" width={120} callback={testParse} />
+            <Record surplus={500}>
+              <Wrap>
+                {#if $testData != null}
+                  <Textarea value={$testData} readonly />
+                {/if}
+              </Wrap>
+            </Record>
+          {/if}
         </div>
         <Record align="right">
           <OperationButton

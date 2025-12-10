@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 import store from '../../store/store';
 
 namespace FileUtil {
-    const FILE_EXTENSION: string = '1204.animp';
+    const FILE_EXTENSION: string = '1210.animp';
 
     /**
      * 文字列を圧縮する
@@ -35,7 +35,7 @@ namespace FileUtil {
      * @param baseStr 圧縮された文字列
      * @returns 複号後の文字列
      */
-    const unZip = (baseStr: string) => {
+    export const unZip = (baseStr: string) => {
         // Base64 文字列を Uint8Array に戻す
         const compressedFromBase64 = Uint8Array.from(atob(baseStr), c => c.charCodeAt(0));
         return Pako.inflate(compressedFromBase64, { to: 'string' });

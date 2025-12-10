@@ -4,7 +4,7 @@ import type StoreProject from "./storeProject";
 const store = writable<Store>({
     fileHandle: null,
     project: null,
-    focus: []
+    focus: [],
 });
 
 export type Store = {

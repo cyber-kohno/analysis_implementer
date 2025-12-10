@@ -17,12 +17,9 @@
   import type StoreEachProc from "../../../store/work/StoreEachProc";
   import EditorAccordion from "./EditorAccordion.svelte";
 
-  let hiddenStart = writable(false);
-  let fullStart = writable(false);
-  let hiddenEach = writable(false);
-  let fullEach = writable(false);
-  let hiddenEnd = writable(false);
-  let fullEnd = writable(false);
+  let startActive = writable(false);
+  let eachActive = writable(false);
+  let endActive = writable(false);
 
   $: project = (() => {
     const project = $store.project;
@@ -120,18 +117,13 @@
       <div class="main">
         <EditorAccordion
           name="start_proc"
-          rate={30}
-          isHidden={$hiddenStart}
-          isFull={$fullStart}
-          setHidden={() => ($hiddenStart = !$hiddenStart)}
-          setFull={() => {
-            if ($fullStart) {
-              $fullStart = false;
+          isActive={$startActive}
+          setActive={() => {
+            if ($startActive) {
+              $startActive = false;
             } else {
-              $fullStart = true;
-              $hiddenStart = false;
-              $fullEach = $fullEnd = false;
-              $hiddenEach = $hiddenEnd = true;
+              $startActive = true;
+              $eachActive = $endActive = false;
             }
           }}
         >
@@ -140,24 +132,19 @@
             onChange={(v) => {
               detail.srcStart = v;
             }}
-            theme="vs"
+            theme="vs-dark"
             declares={declares.map((d) => d.declareDef)}
           />
         </EditorAccordion>
         <EditorAccordion
           name="each_proc"
-          rate={40}
-          isHidden={$hiddenEach}
-          isFull={$fullEach}
-          setHidden={() => ($hiddenEach = !$hiddenEach)}
-          setFull={() => {
-            if ($fullEach) {
-              $fullEach = false;
+          isActive={$eachActive}
+          setActive={() => {
+            if ($eachActive) {
+              $eachActive = false;
             } else {
-              $fullEach = true;
-              $hiddenEach = false;
-              $fullStart = $fullEnd = false;
-              $hiddenStart = $hiddenEnd = true;
+              $eachActive = true;
+              $startActive = $endActive = false;
             }
           }}
         >
@@ -167,23 +154,23 @@
               detail.srcEach = v;
             }}
             theme="vs-dark"
-            declares={declares.map((d) => d.declareDef).concat(detail.srcStart)}
+            declares={declares
+              .map((d) => d.declareDef)
+              .concat(detail.srcStart)
+              .concat(
+                "declare const $it: {index: number, fullPath: string, fileName: string, contentText: string}"
+              )}
           />
         </EditorAccordion>
         <EditorAccordion
           name="end_proc"
-          rate={30}
-          isHidden={$hiddenEnd}
-          isFull={$fullEnd}
-          setHidden={() => ($hiddenEnd = !$hiddenEnd)}
-          setFull={() => {
-            if ($fullEnd) {
-              $fullEnd = false;
+          isActive={$endActive}
+          setActive={() => {
+            if ($endActive) {
+              $endActive = false;
             } else {
-              $fullEnd = true;
-              $hiddenEnd = false;
-              $fullStart = $fullEach = false;
-              $hiddenStart = $hiddenEach = true;
+              $endActive = true;
+              $startActive = $eachActive = false;
             }
           }}
         >

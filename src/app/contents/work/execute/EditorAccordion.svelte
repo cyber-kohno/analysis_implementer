@@ -4,46 +4,34 @@
   import Column from "../../../util/layout/Column.svelte";
   import Record from "../../../util/layout/Record.svelte";
 
-  export let isFull: boolean;
-  export let isHidden: boolean;
-  export let setFull: () => void;
-  export let setHidden: () => void;
+  export let isActive: boolean;
+  export let setActive: () => void;
   export let name: string;
-  export let rate: number;
 
-  $: [rateValue, surplus] = (() => {
+  $: surplus = (() => {
     let surplus: number | null = null;
-    let rateValue: number | null = rate;
-    if (isFull) {
-      rateValue = null;
+    if (isActive) {
       surplus = 80;
     }
-    if (isHidden) rateValue = null;
-    return [rateValue, surplus];
+    return surplus;
   })();
 </script>
 
-<Record rate={rateValue} height={40} {surplus}>
+<Record height={40} {surplus}>
   <Record height={40}>
-    <Column surplus={120}>
+    <Column surplus={60}>
       <LabelRecord {name}></LabelRecord>
     </Column>
-    <Column width={120}>
+    <Column width={50}>
       <OperationSwitch
-        name={"-"}
-        callback={setHidden}
-        isActive={isHidden}
-        width={50}
-      />
-      <OperationSwitch
-        name={"+"}
-        callback={setFull}
-        isActive={isFull}
+        name={!isActive ? "+" : "-"}
+        callback={setActive}
+        {isActive}
         width={50}
       />
     </Column>
   </Record>
-  {#if !isHidden}
+  {#if isActive}
     <Record surplus={40}>
       <slot />
     </Record>

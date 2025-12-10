@@ -6,6 +6,7 @@
   import FileUtil from "./util/data/fileUtil";
   import { invoke } from "@tauri-apps/api/core";
   import { listen } from "@tauri-apps/api/event";
+  import type { FileRequest } from "./store/types";
 
   listen("tauri://file-drop", (event) => {
     alert(event.payload);
@@ -35,7 +36,14 @@
 
     args = (await invoke("get_cli_args")) as string[];
 
-    alert(args);
+    if(args.length >= 2) {
+      const filePath = args[1];
+      const req: FileRequest = { filePath, encoding: 'sjis' };
+      const fileContent = (await invoke("read_file", { req })) as string;
+      const jsonStr = FileUtil.unZip(fileContent);
+      $store.project = JSON.parse(jsonStr);
+    }
+    // alert(args);
     // // クリーンアップ（コンポーネントが破棄されるとき）
     // return () => {
     //   window.removeEventListener("contextmenu", handler);
